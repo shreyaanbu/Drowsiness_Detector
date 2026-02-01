@@ -1,171 +1,147 @@
-# Person Classifier on Camera
+1. Project Description
+This project focuses on developing a real-time driver drowsiness detection system using Artificial Intelligence and embedded hardware. The system uses a webcam to capture facial images of the user and processes them using a machine learning model trained on the Edge Impulse platform.
+The trained model is deployed on the Arduino UnoQ board, enabling on-device inference. The system continuously analyses eyes and facial patterns to determine whether the user is awake, drowsy, or in an unknown state. When drowsiness is detected, the system alerts the user through visual feedback, helping to prevent accidents caused by fatigue.
+By combining AI with low-power embedded hardware, this project demonstrates how intelligent monitoring systems can be implemented in real-world safety applications.
 
-The **Person Classifier** example lets you detect people on a live feed from a camera and visualize the model inference result on a user-friendly web interface.
+2. Hardware Lineup
+The following hardware components were used to implement the drowsiness detection system:
+🔹 Processing & Control Unit
+Arduino UnoQ Board- Acts as the main embedded controller and runs the trained AI model locally for real-time inference.
+🔹 Development & Monitoring Device
+Laptop / PC-
+Training the model on Edge Impulse
+Uploading firmware to the board
+Monitoring output through the Serial Monitor
+Debugging and testing
+🔹 Vision Input
+Webcam- Captures real-time facial images of the user. These images are converted into grayscale format and used as input for the AI model
+🔹 Connectivity Devices
+USB Dongle- Enables wireless connectivity or additional communication support (if required).
+USB Type-A to Type-C Cable-  Used to connect the Arduino UnoQ board to the laptop for programming, power supply, and data transfer.
+🔹 Power Supply
+Power Adapter-  Provides stable external power to the system during standalone operation.
 
-**Note:** This example requires to be run using **Network Mode** in the Arduino App Lab or in **Single-Board Computer (SBC)** mode. Because you will need a USB-C hub and a USB camera.
+3. User Interface & Feedback
+The drowsiness detection system provides user interaction and feedback through both software-based and visual interfaces, ensuring real-time monitoring and alerts.
+🔹 Edge Impulse Web Dashboard (Development Interface)
+During the development phase, the Edge Impulse web dashboard was used for:
+Uploading and managing training data
+Creating and configuring the impulse
+Training and validating the AI model
+Analysing model performance metrics
+Testing the model before deployment
+This interface helped in optimising the model for embedded deployment.
+🔹 Laptop Interface (Monitoring & Debugging)
+The laptop acts as the primary monitoring device during operation.
+Displays real-time classification results such as:
+Awake
+Drowsy
+Unknown
+Shows confidence scores for each prediction
+Live Webcam Preview
+Allows developers to verify proper face alignment and image capture
+Ensures consistent input quality for the AI model
+🔹 Visual Feedback System
+The system provides simple and effective visual feedback to the user.
+On-Screen Alerts (via Laptop)
+Text-based alerts displayed on the Web UI we developed
+Warning messages when drowsiness is detected
+Status Indication
+Normal State: “Awake” message displayed
+Warning State: “Drowsy” message displayed
+Error State: “Unknown” message displayed
+🔹 User Interaction Flow
+The webcam captures the user’s face.
+Images are processed by the AI model on the Arduino UnoQ board.
+Classification results are sent to the laptop.
+The results are displayed in the Web UI we developed.
+The user receives immediate feedback in case of drowsiness.
+This interface design ensures low complexity, fast response, and ease of use, making the system suitable for real-time safety applications.
 
-![Person Classifier on Camera](assets/docs_assets/person-classification.png)
+4. The AI Model
+The drowsiness detection system uses a Convolutional Neural Network (CNN) trained and deployed using the Edge Impulse platform. The model is designed for embedded machine learning, enabling real-time image classification directly on the Arduino UnoQ board without relying on cloud services.
+🔹 Model Development Platform
+Edge Impulse Studio
+Used for data management, preprocessing, model training, and deployment
+Optimized the model for low-power embedded devices
+Generated firmware compatible with the Arduino UnoQ board
+🔹 Dataset and Input Format
+Total images: 1860
+Training-testing split: 80% training, 20% testing
+Image type: Grayscale
+Image resolution: 96 × 96 pixels
+Input features: 9216 
+Classes: Awake , Drowsy, Unknown
+Each input image is converted into grayscale and resized before being passed to the neural network.
+🔹 Model Architecture
+The AI model is based on a CNN architecture consisting of:
+Input Layer: 9216 features
+Convolution Layer 1: 16 filters, 3×3 kernel
+Convolution Layer 2: 32 filters, 3×3 kernel
+Flatten Layer
+Dropout Layer (0.25)
+Fully Connected Output Layer (3 classes)
+This structure allows the model to extract important facial features such as eye closure and facial posture while maintaining low memory usage.
+🔹 Model Optimisation
+To improve on-device performance on the Arduino UnoQ, the model was optimised using the Edge Impulse deployment tools.
+The model was deployed in Quantised (INT8) format, which converts floating-point values into 8-bit integers.
+INT8 Quantization
+Reduces model size
+Improves inference speed
+Lowers memory and power consumption
+Enables real-time execution on embedded hardware
+This optimisation allows efficient inference while maintaining high accuracy.
+🔹 On-Device (Edge) Processing
+A key feature of this system is local data processing on the board, also known as edge computing.
+All image processing and classification occur on the Arduino UnoQ
+No data is sent to external servers
+User privacy is maintained
+Low latency is achieved
+This makes the system reliable and suitable for real-time safety applications.
+🔹 Model Performance
+The trained model achieved high accuracy and reliability during testing:
+Overall Accuracy: 98.98%
+ROC-AUC Score: 0.9997
+Low Classification Loss
+The confusion matrix and classification report show strong performance across all classes, indicating effective discrimination between awake and drowsy states.
+These results demonstrate that the model is well-suited for real-time drowsiness detection.
 
-This example uses a pre-trained model to detect people on a live video feed from a camera. The workflow involves continuously getting the frames from a USB camera, processing it through an AI model using the `video_imageclassification` Brick, and displaying the classification along with their corresponding probabilities. The code is structured to be easily adaptable to different models.
+5. Software Architecture
+The software architecture of the drowsiness detection system follows a modular client–server style design. The system consists of three main layers: the Edge Impulse AI model, the backend controller, and the web-based user interface.
+🔹 Main Software Components
+a. Edge Impulse AI Model Component
+This component handles both data preprocessing and inference.Integrated using the Edge Impulse deployment package.Model configuration defined in the YAML file.
+Performs internal preprocessing such as: Image resizing, Grayscale conversion, Normalization, Executes INT8 quantized inference, Produces classification probabilities
+This component works as a self-contained AI module that directly converts raw camera input into prediction results.
+
+b. Backend Control Module (main.py)
+The main.py file acts as the core backend of the system.
+Loads and links the Edge Impulse model
+Manages camera input
+Sends frames to the AI model
+Receives inference results
+Implements application logic
+Connects the AI model with the Web UI
+It functions as the central controller that coordinates all software operations.
+
+c. Web User Interface Module
+The user interface is implemented as a web-based dashboard using:
+index.html – Defines the structure of the web page
+styles.css – Handles visual styling and layout
+App.js – Implements dynamic behavior and interaction
+Functions of the Web UI include:
+Displaying live system status
+Showing prediction results
+Presenting confidence scores
+Providing visual alerts for drowsiness
+Allowing user interaction
+This interface enables easy monitoring through a browser without additional software.
+🔹 Configuration and Model Management (YAML File)
+The YAML configuration file defines the AI model and system parameters.
+Specifies model paths and metadata
+Defines input dimensions and formats
+Controls preprocessing settings
+Manages deployment parameters
+This file ensures consistent integration between the backend and the AI model.
 
 
-## Brick Used
-
-The example uses the following Bricks:
-
-- `web_ui`: Brick to create a web interface to display the classification results and model controls.
-- `video_imageclassification`: Brick to classify objects within a live video feed from a camera.
-  
-## Hardware and Software Requirements
-
-### Hardware
-
-- Arduino UNO Q (x1)
-- USB camera (x1)
-- USB-C® hub adapter with external power (x1)
-- A power supply (5 V, 3 A) for the USB hub (e.g. a phone charger)
-- Personal computer with internet access
-
-### Software
-
-- Arduino App Lab
-
-**Note:** You can also run this example using your Arduino UNO Q as a Single-Board Computer (SBC) using a [USB-C hub](https://store.arduino.cc/products/usb-c-to-hdmi-multiport-adapter-with-ethernet-and-usb-hub) with a mouse, keyboard and monitor attached.
-
-## How to Use the Example
-
-1. Connect the USB-C hub to the UNO Q and the USB camera.
-  ![Hardware setup](assets/docs_assets/hardware-setup.png)
-2. Attach the external power supply to the USB-C hub to power everything.
-3. Run the App.
-   ![Arduino App Lab - Run App](assets/docs_assets/launch-app.png)
-4. The App should open automatically in the web browser. You can open it manually via `<board-name>.local:7000`.
-5. Position yourself in front of the camera and watch as the App detects and recognizes a person.
-   
-## How it Works
-
-This example hosts a Web UI where we can see the video input from the camera connected via USB. The video stream is then processed using the `video_imageclassification` Brick. When a person is detected, it is logged along with the confidence score (e.g. 95% person).
-
-Here is a brief explanation of the full-stack application:
-
-### 🔧 Backend (main.py)
-
-- Initializes the app Bricks:
-  - **WebUI** (`ui = WebUI()`): channel to push messages to the frontend.
-  - **VideoImageClassification** (`detection_stream = VideoImageClassification()`): runs object detection on the video stream.
-
-- Wires detection events to actions using callbacks:
-  - `on_detect("person", person_detected)`: when a **person** is detected, logs `"Detected a person!!!"`.
-  - `on_detect_all(send_detections_to_ui)`: for **every detection batch**, builds a JSON list with:
-    - `content`: label of the detected object  
-    - `confidence`: detection confidence score  
-    - `timestamp`: ISO 8601 UTC timestamp  
-    Then sends the JSON to the UI.
-
-- Exposes:
-  - **Realtime messaging**: publishes detection updates to the frontend via `ui.send_message("classifications", message=<json>)` so the UI can display live classifications.
-
-- Runs with `App.run()` which starts the internal event loop and keeps the detection stream and UI messaging alive.
-
-### 💻 Frontend (index.html + app.js)
-
-- Connects to the backend using **Socket.IO** (`io()`).
-- Renders:
-  - A **video feed iframe** with placeholder when the webcam is not yet available.
-  - A **confidence control panel** with slider and numeric input to adjust detection threshold.
-  - A **feedback section** that shows animated responses when detections occur.
-  - A **recent detections list** displaying the latest classifications with confidence percentage and timestamp.
-
-- Manages:
-  - Automatic retry logic to load the video stream into the iframe.
-  - Dynamic update of the confidence slider and input with real-time visual feedback.
-  - Popover tooltips that explain the confidence threshold and feedback behavior.
-
-- Wires:
-  - **Socket events** (`classifications`) to update the feedback section and populate the recent detections list.
-  - **UI controls** (slider, input, reset button) to adjust and reset the confidence threshold interactively.
-  - **Connection status** to display an error message when the link to the backend is lost.
-
-## Understanding the Code
-
-Once the application is running, you can open it in your browser by navigating to `<BOARD-IP-ADDRESS>:7000`.  
-At that point, the device begins performing the following:
-
-- Serving the **video classification UI** and exposing realtime transports.
-
-    The UI is hosted by the `WebUI` Brick and communicates with the backend via WebSocket (Socket.IO).  
-    The backend pushes classification messages whenever new objects are detected.
-
-    ```python
-    from arduino.app_bricks.web_ui import WebUI
-    from arduino.app_bricks.video_imageclassification import VideoImageClassification
-    
-    ui = WebUI()
-    detection_stream = VideoImageClassification()
-
-    detection_stream.on_detect("person", person_detected)      # single-class callback
-    detection_stream.on_detect_all(send_detections_to_ui)      # all-classes callback
-    ```
-
-    - `person` (event): triggers a simple callback printing `"Detected a person!!!"`.
-    - `classifications` (WebSocket message): JSON list with label, confidence, and timestamp sent to the UI.
-
-- Processing detections and broadcasting updates.
-
-    When the video model detects objects, the backend:
-
-    1. Collects all current classifications with their confidence scores.
-    2. Attaches an ISO 8601 UTC timestamp.
-    3. Builds a JSON message and publishes it to the frontend channel `classifications`.
-
-    ```python
-    def send_detections_to_ui(classifications: dict):
-    if len(classifications) == 0:
-        return
-        
-    entries = []
-    for key, value in classifications.items():
-        entry = {
-        "content": key,
-        "confidence": value,
-        "timestamp": datetime.now(UTC).isoformat()
-        }
-        entries.append(entry)    
-    
-    if len(entries) > 0:
-        msg = json.dumps(entries)
-        ui.send_message("classifications", message=msg)
-    ```
-
-- Rendering and interacting on the frontend.
-
-    The **index.html + app.js** bundle defines the interface:
-
-    - A **video feed iframe** attempts to connect to the embedded camera stream (`/embed`).
-    - A **confidence control** (slider + input) lets the user adjust the detection threshold.
-    - A **feedback section** displays animated messages when a person is classified.
-    - A **recent detections list** shows the latest entries with percentage and timestamp.
-
-    ```javascript
-    const socket = io(`http://${window.location.host}`);
-
-    socket.on('classifications', (message) => {
-        printClassifications(message);   // update history
-        renderClasses();                 // redraw the list
-        updateFeedback(true);            // show greeting animation
-    });
-    ```
-
-    - `classifications` (WebSocket): received whenever the backend publishes detection results.
-    - Confidence slider and reset button dynamically adjust the filtering threshold in the UI.
-    - If the connection drops, an error message is shown in the frontend (`error-container`).
-
-- Executing the event loop.
-
-    Finally, the backend keeps everything alive with:
-
-    ```python
-    App.run()
-    ```
-
-    This maintains the video classification stream, event callbacks, and WebSocket communication with the frontend.
