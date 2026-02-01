@@ -1,0 +1,25 @@
+services:
+  ei-video-classification-runner:
+    user: 1000:1000
+    devices:
+    - /dev/video0
+    - /dev/video1
+    - /dev/video2
+    - /dev/video3
+    - /dev/snd
+    - /dev/dri
+    group_add:
+    - dialout
+    - video
+    - audio
+    - render
+    labels:
+      cc.arduino.app: "true"
+      cc.arduino.app.path: /home/arduino/ArduinoApps/copy-of-person-classifier-on-camera
+    environment:
+      APP_HOME: /home/arduino/ArduinoApps/copy-of-person-classifier-on-camera
+      BIND_ADDRESS: 0.0.0.0
+      CUSTOM_MODEL_PATH: /home/arduino/.arduino-bricks/ei-models
+      EI_CLASSIFICATION_MODEL: /home/arduino/.arduino-bricks/ei-models/drowsiness-detector-linux-aarch64-v2.eim
+      HOST_IP: 192.168.205.217
+      VIDEO_DEVICE: /dev/video0
